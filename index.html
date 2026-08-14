@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Rotinas - App Gamificado</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Perfil Header */
+        .profile-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .profile-details h2 {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-details p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .xp-container {
+            margin-top: 10px;
+        }
+
+        .xp-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .xp-bar-bg {
+            width: 100%;
+            height: 10px;
+            background-color: var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Abas Navegação */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 5px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: var(--text);
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Conteúdo das Abas */
+        .tab-content {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        /* Tarefas */
+        .task-item {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .task-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-title {
+            font-size: 0.95rem;
+        }
+
+        .task-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--border);
+            color: var(--text-muted);
+        }
+
+        .task-badge.xp {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+        }
+
+        .task-actions-btn {
+            display: flex;
+            gap: 6px;
+        }
+
+        button.action-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        button.fail-btn {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        button.fail-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Formulários e Inputs */
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--text);
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--text);
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Títulos Listagem */
+        .title-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .title-item.locked {
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Resumo do Perfil -->
+    <div class="profile-card">
+        <div class="profile-info">
+            <div class="profile-avatar" id="profileEmojiDisplay">👤</div>
+            <div class="profile-details">
+                <h2 id="profileNameDisplay">Herói</h2>
+                <p id="profileTitleDisplay">Nômade Infiltrado</p>
+            </div>
+        </div>
+        <div class="xp-container">
+            <div class="xp-header">
+                <span id="levelDisplay">Nível 1</span>
+                <span id="xpTextDisplay">0 / 100 XP</span>
+            </div>
+            <div class="xp-bar-bg">
+                <div class="xp-bar-fill" id="xpBarFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegação por Abas -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(0)">Hoje</button>
+        <button class="tab-btn" onclick="switchTab(1)">Gerenciar</button>
+        <button class="tab-btn" onclick="switchTab(2)">Config</button>
+        <button class="tab-btn" onclick="switchTab(3)">Títulos</button>
+    </div>
+
+    <!-- Aba 1: Tarefas do Dia -->
+    <div class="tab-content active" id="tab-0">
+        <h3>Tarefas de Hoje (<span id="currentDayName"></span>)</h3>
+        <div id="todayTaskList">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+
+    <!-- Aba 2: Gerenciar Tarefas da Semana -->
+    <div class="tab-content" id="tab-1">
+        <h3>Gerenciar Tarefas</h3>
+        <select id="selectDay" onchange="renderManageTasks()">
+            <option value="0">Domingo</option>
+            <option value="1">Segunda-feira</option>
+            <option value="2">Terça-feira</option>
+            <option value="3">Quarta-feira</option>
+            <option value="4">Quinta-feira</option>
+            <option value="5">Sexta-feira</option>
+            <option value="6">Sábado</option>
+        </select>
+
+        <div id="manageTaskList" style="margin-bottom: 15px;">
+            <!-- Preenchido via JS -->
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+
+        <h4 style="font-size: 0.95rem; margin-bottom: 10px;">Adicionar Nova Tarefa</h4>
+        <input type="text" id="newTaskTitle" placeholder="Nome da tarefa...">
+        <select id="newTaskType">
+            <option value="xp">Ganha/Perde XP (Valor: 20 XP)</option>
+            <option value="common">Comum (Sem XP)</option>
+        </select>
+        <button class="btn-primary" onclick="addNewTask()">Adicionar Tarefa</button>
+    </div>
+
+    <!-- Aba 3: Configurações de Perfil -->
+    <div class="tab-content" id="tab-2">
+        <h3>Configurações do Perfil</h3>
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Nome do Personagem</label>
+        <input type="text" id="editNameInput" placeholder="Seu nome">
+        
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Emoji do Perfil</label>
+        <input type="text" id="editEmojiInput" placeholder="👤" maxlength="2">
+
+        <button class="btn-primary" onclick="saveProfileSettings()">Salvar Alterações</button>
+
+        <h3 style="margin-top: 30px;">Zona de Perigo</h3>
+        <button class="btn-danger" onclick="resetProgress()">Resetar Todas as Pontuações e Níveis</button>
+    </div>
+
+    <!-- Aba 4: Títulos Desbloqueados -->
+    <div class="tab-content" id="tab-3">
+        <h3>Galeria de Títulos</h3>
+        <div id="titlesList">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lista de Títulos por Nível
+    const titlesData = [
+        { level: 1, title: "Iniciante da Rotina" },
+        { level: 3, title: "Aprendiz Constante" },
+        { level: 5, title: "Guerreiro do Hábito" },
+        { level: 8, title: "Mestre da Disciplina" },
+        { level: 10, title: "Lorde Lendário da Produtividade" }
+    ];
+
+    // Estrutura de Dados Inicial
+    let appData = JSON.parse(localStorage.getItem('rpg_rotinas_data')) || {
+        name: "Aventureiro",
+        emoji: "🛡️",
+        xp: 0,
+        level: 1,
+        // Tarefas organizadas por dia da semana (0 = Domingo a 6 = Sábado)
+        tasks: {
+            0: [],
+            1: [
+                { id: 1, title: "Estudar 30 minutos", type: "xp", value: 20, completed: false, failed: false },
+                { id: 2, title: "Beber 2L de água", type: "common", value: 0, completed: false, failed: false }
+            ],
+            2: [],
+            3: [],
+            4: [],
+            5: [],
+            6: []
+        }
+    };
+
+    const daysNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+
+    function saveData() {
+        localStorage.setItem('rpg_rotinas_data', JSON.stringify(appData));
+    }
+
+    // Navegação de Abas
+    function switchTab(index) {
+        const buttons = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        buttons.forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+            contents[i].classList.toggle('active', i === index);
+        });
+
+        if (index === 0) renderTodayTasks();
+        if (index === 1) renderManageTasks();
+        if (index === 2) loadProfileSettings();
+        if (index === 3) renderTitles();
+    }
+
+    // Renderizar Perfil
+    function updateProfileUI() {
+        document.getElementById('profileEmojiDisplay').innerText = appData.emoji;
+        document.getElementById('profileNameDisplay').innerText = appData.name;
+        document.getElementById('levelDisplay').innerText = `Nível ${appData.level}`;
+
+        // Definir Título Atual baseado no nível
+        let currentTitle = "Iniciante da Rotina";
+        for (let t of titlesData) {
+            if (appData.level >= t.level) {
+                currentTitle = t.title;
+            }
+        }
+        document.getElementById('profileTitleDisplay').innerText = currentTitle;
+
+        // Cálculo de XP para o próximo nível (Nível * 100)
+        let xpRequired = appData.level * 100;
+        document.getElementById('xpTextDisplay').innerText = `${appData.xp} / ${xpRequired} XP`;
+        let percentage = Math.min(Math.max((appData.xp / xpRequired) * 100, 0), 100);
+        document.getElementById('xpBarFill').style.width = `${percentage}%`;
+    }
+
+    // Sistema de XP e Níveis
+    function addXP(amount) {
+        appData.xp += amount;
+        let xpRequired = appData.level * 100;
+        
+        if (appData.xp >= xpRequired) {
+            appData.xp -= xpRequired;
+            appData.level++;
+            alert(`Parabéns! Você subiu para o Nível ${appData.level}! 🎉`);
+        } else if (appData.xp < 0) {
+            if (appData.level > 1) {
+                appData.level--;
+                let prevRequired = appData.level * 100;
+                appData.xp = prevRequired + appData.xp;
+                alert(`Você perdeu muito XP e caiu para o Nível ${appData.level}! Cuidado! ⚠️`);
+            } else {
+                appData.xp = 0;
+            }
+        }
+        saveData();
+        updateProfileUI();
+    }
+
+    // Aba 1: Tarefas de Hoje
+    function renderTodayTasks() {
+        const todayIndex = new Date().getDay();
+        document.getElementById('currentDayName').innerText = daysNames[todayIndex];
+        
+        const container = document.getElementById('todayTaskList');
+        const todaysTasks = appData.tasks[todayIndex] || [];
+
+        if (todaysTasks.length === 0) {
+            container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px;">Nenhuma tarefa cadastrada para hoje.</p>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        todaysTasks.forEach(task => {
+            container.innerHTML += `
+                <div class="task-item" style="opacity: ${task.completed || task.failed ? 0.6 : 1}">
+                    <div class="task-row">
+                        <div class="task-info">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} ${task.failed ? 'disabled' : ''} 
+                                   onchange="toggleCompleteTask(${todayIndex}, ${task.id})" style="width: 20px; height: 20px; cursor: pointer;">
+                            <span class="task-title" style="text-decoration: ${task.completed ? 'line-through' : 'none'}">${task.title}</span>
+                        </div>
+                        <span class="task-badge ${task.type === 'xp' ? 'xp' : ''}">
+                            ${task.type === 'xp' ? '+20 XP' : 'Comum'}
+                        </span>
+                    </div>
+                    ${!task.completed && !task.failed ? `
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="action-btn fail-btn" onclick="failTask(${todayIndex}, ${task.id})">Não consegui concluir</button>
+                    </div>` : ''}
+                    ${task.failed ? `<span style="font-size: 0.75rem; color: var(--danger); text-align: right;">Marcado como não concluído (-20 XP aplicados)</span>` : ''}
+                </div>
+            `;
+        });
+    }
+
+    function toggleCompleteTask(dayIndex, taskId) {
+        let task = appData.tasks[dayIndex].find(t => t.id === taskId);
+        if (!task) return;
+
+        if (!task.completed) {
+            task.completed = true;
+            task.failed = false;
+            if (task.type === 'xp') addXP(20);
+        } else {
+            task.completed = false;
+            if (task.type === 'xp') addXP(-20);
+        }
+        saveData();
+        renderTodayTasks();
+        updateProfileUI();
+    }
+
+    function failTask(dayIndex, taskId) {
+        let task = appData.tasks[dayIndex].find(t => t.id === taskId);
+        if (!task || task.completed || task.failed) return;
+
+        task.failed = true;
+        if (task.type === 'xp') {
+            addXP(-20);
+        }
+        saveData();
+        renderTodayTasks();
+        updateProfileUI();
+    }
+
+    // Aba 2: Gerenciar Tarefas
+    function renderManageTasks() {
+        const selectedDay = document.getElementById('selectDay').value;
+        const container = document.getElementById('manageTaskList');
+        const dayTasks = appData.tasks[selectedDay] || [];
+
+        if (dayTasks.length === 0) {
+            container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma tarefa neste dia.</p>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        dayTasks.forEach(task => {
+            container.innerHTML += `
+                <div class="task-row" style="background: var(--bg-color); padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.9rem;">${task.title} (${task.type === 'xp' ? 'Com XP' : 'Comum'})</span>
+                    <button class="action-btn fail-btn" onclick="deleteTask(${selectedDay}, ${task.id})">Apagar</button>
+                </div>
+            `;
+        });
+    }
+
+    function addNewTask() {
+        const selectedDay = document.getElementById('selectDay').value;
+        const titleInput = document.getElementById('newTaskTitle');
+        const typeInput = document.getElementById('newTaskType');
+
+        if (!titleInput.value.trim()) {
+            alert('Digite o nome da tarefa.');
+            return;
+        }
+
+        const newTask = {
+            id: Date.now(),
+            title: titleInput.value.trim(),
+            type: typeInput.value,
+            value: typeInput.value === 'xp' ? 20 : 0,
+            completed: false,
+            failed: false
+        };
+
+        appData.tasks[selectedDay].push(newTask);
+        saveData();
+        titleInput.value = '';
+        renderManageTasks();
+    }
+
+    function deleteTask(dayIndex, taskId) {
+        appData.tasks[dayIndex] = appData.tasks[dayIndex].filter(t => t.id !== taskId);
+        saveData();
+        renderManageTasks();
+    }
+
+    // Aba 3: Configurações
+    function loadProfileSettings() {
+        document.getElementById('editNameInput').value = appData.name;
+        document.getElementById('editEmojiInput').value = appData.emoji;
+    }
+
+    function saveProfileSettings() {
+        const name = document.getElementById('editNameInput').value.trim();
+        const emoji = document.getElementById('editEmojiInput').value.trim();
+
+        if (name) appData.name = name;
+        if (emoji) appData.emoji = emoji;
+
+        saveData();
+        updateProfileUI();
+        alert('Perfil atualizado com sucesso!');
+    }
+
+    function resetProgress() {
+        if (confirm('Tem certeza que deseja resetar todo o XP, nível e pontuações? Suas tarefas serão mantidas.')) {
+            appData.xp = 0;
+            appData.level = 1;
+            // Limpar status de concluído/falhado das tarefas
+            for (let day in appData.tasks) {
+                appData.tasks[day].forEach(t => {
+                    t.completed = false;
+                    t.failed = false;
+                });
+            }
+            saveData();
+            updateProfileUI();
+            alert('Progresso resetado!');
+        }
+    }
+
+    // Aba 4: Títulos Desbloqueados
+    function renderTitles() {
+        const container = document.getElementById('titlesList');
+        container.innerHTML = '';
+
+        titlesData.forEach(item => {
+            const unlocked = appData.level >= item.level;
+            container.innerHTML += `
+                <div class="title-item ${unlocked ? '' : 'locked'}">
+                    <span>${item.title}</span>
+                    <span style="font-size: 0.8rem;">${unlocked ? 'Desbloqueado (Nível ' + item.level + ')' : 'Requer Nível ' + item.level}</span>
+                </div>
+            `;
+        });
+    }
+
+    // Inicialização
+    updateProfileUI();
+</script>
+
+</body>
+</html>
