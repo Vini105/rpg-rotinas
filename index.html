@@ -232,11 +232,7 @@
 
         .task-badge.facil, .task-badge.media, .task-badge.dificil { background-color: rgba(16, 185, 129, 0.2); color: var(--accent); }
         .task-badge.skill { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
-
-        .task-actions-btn {
-            display: flex;
-            gap: 6px;
-        }
+        .task-badge.max { background-color: rgba(234, 179, 8, 0.2); color: #eab308; }
 
         button.action-btn {
             background: none;
@@ -307,18 +303,6 @@
             background-color: var(--primary-hover);
         }
 
-        .btn-danger {
-            background-color: var(--danger);
-            color: var(--text);
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
         /* Títulos Listagem */
         .title-item {
             display: flex;
@@ -343,14 +327,14 @@
             <div class="profile-avatar" id="profileEmojiDisplay">👤</div>
             <div class="profile-details">
                 <h2 id="profileNameDisplay">Herói</h2>
-                <p id="profileTitleDisplay">Novato Disciplinado</p>
+                <p id="profileTitleDisplay">Aprendiz dos hábitos</p>
             </div>
         </div>
         
         <div class="xp-container">
             <div class="xp-header">
                 <span id="levelDisplay">Nível 1</span>
-                <span id="xpTextDisplay">0 / 100 XP</span>
+                <span id="xpTextDisplay">0 / 150 XP</span>
             </div>
             <div class="xp-bar-bg">
                 <div class="xp-bar-fill" id="xpBarFill"></div>
@@ -361,21 +345,21 @@
         <div class="skills-section">
             <div class="skill-row">
                 <div class="skill-header">
-                    <span>📚 Estudos</span>
+                    <span id="skill-label-0">📚 Estudos</span>
                     <span id="skill-estudos-lvl">Nível 1</span>
                 </div>
                 <div class="skill-segments" id="segments-estudos"></div>
             </div>
             <div class="skill-row">
                 <div class="skill-header">
-                    <span>💪 Treino</span>
+                    <span id="skill-label-1">💪 Treino</span>
                     <span id="skill-treino-lvl">Nível 1</span>
                 </div>
                 <div class="skill-segments" id="segments-treino"></div>
             </div>
             <div class="skill-row">
                 <div class="skill-header">
-                    <span>📖 Leitura</span>
+                    <span id="skill-label-2">📖 Leitura</span>
                     <span id="skill-leitura-lvl">Nível 1</span>
                 </div>
                 <div class="skill-segments" id="segments-leitura"></div>
@@ -421,7 +405,6 @@
         <input type="text" id="newTaskTitle" placeholder="Nome da tarefa...">
         
         <select id="newTaskType">
-            <option value="common">Comum (0 XP)</option>
             <option value="facil">Fácil (+10 XP)</option>
             <option value="media">Média (+20 XP)</option>
             <option value="dificil">Difícil (+40 XP)</option>
@@ -429,9 +412,9 @@
 
         <select id="newTaskSkill">
             <option value="neutra">Neutra / Outros (Sem Habilidade)</option>
-            <option value="estudos">Estudos 📚</option>
-            <option value="treino">Treino 💪</option>
-            <option value="leitura">Leitura 📖</option>
+            <option value="estudos" id="opt-skill-0">Estudos 📚</option>
+            <option value="treino" id="opt-skill-1">Treino 💪</option>
+            <option value="leitura" id="opt-skill-2">Leitura 📖</option>
         </select>
 
         <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Selecione os dias para repetir:</label>
@@ -448,7 +431,7 @@
         <button class="btn-primary" onclick="addNewTaskBatch()">Adicionar Tarefa(s)</button>
     </div>
 
-    <!-- Aba 3: Configurações de Perfil -->
+    <!-- Aba 3: Configurações de Perfil e Habilidades -->
     <div class="tab-content" id="tab-2">
         <h3>Configurações do Perfil</h3>
         <label style="font-size: 0.85rem; color: var(--text-muted);">Nome do Personagem</label>
@@ -457,10 +440,17 @@
         <label style="font-size: 0.85rem; color: var(--text-muted);">Emoji do Perfil</label>
         <input type="text" id="editEmojiInput" placeholder="👤" maxlength="2">
 
-        <button class="btn-primary" onclick="saveProfileSettings()">Salvar Alterações</button>
+        <h3 style="margin-top: 25px;">Customizar Habilidades</h3>
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Nome da Habilidade 1</label>
+        <input type="text" id="editSkill0" placeholder="Ex: Estudos 📚">
+        
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Nome da Habilidade 2</label>
+        <input type="text" id="editSkill1" placeholder="Ex: Treino 💪">
 
-        <h3 style="margin-top: 30px;">Zona de Perigo</h3>
-        <button class="btn-danger" onclick="resetProgress()">Resetar Todas as Pontuações e Níveis</button>
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Nome da Habilidade 3</label>
+        <input type="text" id="editSkill2" placeholder="Ex: Leitura 📖">
+
+        <button class="btn-primary" style="margin-top: 10px;" onclick="saveProfileSettings()">Salvar Alterações</button>
     </div>
 
     <!-- Aba 4: Títulos Desbloqueados -->
@@ -472,10 +462,10 @@
 
 <script>
     const titlesData = [
-        { level: 1, title: "Novato Disciplinado" },
-        { level: 3, title: "Guerreiro Consistente" },
-        { level: 6, title: "Mestre da Rotina" },
-        { level: 10, title: "Lorde Supremo da Disciplina" }
+        { level: 1, title: "Aprendiz dos hábitos" },
+        { level: 2, title: "Pequeno disciplinado" },
+        { level: 3, title: "Profissional da rotina" },
+        { level: 4, title: "Mestre absoluto da constância" }
     ];
 
     let appData = JSON.parse(localStorage.getItem('rpg_rotinas_data_v5')) || {
@@ -488,10 +478,30 @@
             treino: 0,
             leitura: 0
         },
+        skillNames: {
+            estudos: "Estudos 📚",
+            treino: "Treino 💪",
+            leitura: "Leitura 📖"
+        },
         lastCheckedDate: null,
         hadUnfinishedYesterday: false,
         tasks: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
     };
+
+    // Ajuste retroativo caso o jogador já tenha passado de 30 pontos nas versões anteriores
+    for (let key in appData.skills) {
+        if (appData.skills[key] > 30) {
+            appData.skills[key] = 30;
+        }
+    }
+
+    if (!appData.skillNames) {
+        appData.skillNames = {
+            estudos: "Estudos 📚",
+            treino: "Treino 💪",
+            leitura: "Leitura 📖"
+        };
+    }
 
     const daysNames = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
 
@@ -558,6 +568,13 @@
         return 0;
     }
 
+    function getXPRequired(lvl) {
+        if (lvl === 1) return 150;
+        if (lvl === 2) return 300;
+        if (lvl === 3) return 500;
+        return 1000; // Nível 4 max
+    }
+
     function switchTab(index) {
         const buttons = document.querySelectorAll('.tab-btn');
         const contents = document.querySelectorAll('.tab-content');
@@ -575,17 +592,17 @@
 
     function updateProfileTheme() {
         const card = document.getElementById('profileCardStyle');
-        let color = '#6366f1'; 
-        let glow = 'rgba(99, 102, 241, 0.2)';
+        let color = '#f8fafc'; // Branco (Nível 1)
+        let glow = 'rgba(248, 250, 252, 0.2)';
 
-        if (appData.level >= 3 && appData.level < 6) {
-            color = '#94a3b8'; 
-            glow = 'rgba(148, 163, 184, 0.25)';
-        } else if (appData.level >= 6 && appData.level < 10) {
-            color = '#f59e0b'; 
+        if (appData.level === 2) {
+            color = '#94a3b8'; // Prata (Nível 2)
+            glow = 'rgba(148, 163, 184, 0.3)';
+        } else if (appData.level === 3) {
+            color = '#f59e0b'; // Ouro (Nível 3)
             glow = 'rgba(245, 158, 11, 0.3)';
-        } else if (appData.level >= 10) {
-            color = '#38bdf8'; 
+        } else if (appData.level >= 4) {
+            color = '#38bdf8'; // Diamante (Nível 4)
             glow = 'rgba(56, 189, 248, 0.4)';
         }
 
@@ -594,26 +611,36 @@
     }
 
     function renderSkillsUI() {
-        ['estudos', 'treino', 'leitura'].forEach(skillKey => {
+        const keys = ['estudos', 'treino', 'leitura'];
+        
+        // Cores fixas para cada nível da habilidade
+        const skillColors = {
+            1: '#f97316', // Laranja (Nível 1)
+            2: '#eab308', // Amarelo (Nível 2)
+            3: '#10b981'  // Verde   (Nível 3)
+        };
+
+        keys.forEach((skillKey, idx) => {
             let totalPoints = appData.skills[skillKey] || 0;
-            // Limite máximo de nível é 3 (cada nível completo usa 10 pontos, total de 30 pontos)
-            let currentLevel = Math.min(Math.floor(totalPoints / 10) + 1, 3);
+            
+            // Garantir que a renderização obedece o limite visual
+            if (totalPoints > 30) totalPoints = 30;
+            
+            let currentLevel = Math.floor(totalPoints / 10) + 1;
             let activeSegments = totalPoints % 10;
-            if (totalPoints > 0 && activeSegments === 0 && currentLevel > 1) {
-                activeSegments = 10;
-            }
-            if (currentLevel === 3 && totalPoints >= 30) {
-                activeSegments = 10;
+
+            // Lógica para Nível Máximo (30 pontos)
+            if (totalPoints >= 30) {
+                currentLevel = 3;
+                activeSegments = 10; // Todos os segmentos ficam cheios
             }
 
-            document.getElementById(`skill-${skillKey}-lvl`).innerText = `Nível ${currentLevel}`;
+            let lvlLabel = totalPoints >= 30 ? '<span style="color:var(--accent); font-weight:bold;">Nível MÁX</span>' : `Nível ${currentLevel}`;
+            
+            document.getElementById(`skill-${skillKey}-lvl`).innerHTML = lvlLabel;
+            document.getElementById(`skill-label-${idx}`).innerText = appData.skillNames[skillKey];
+            document.getElementById(`opt-skill-${idx}`).innerText = appData.skillNames[skillKey];
 
-            // Cores solicitadas por nível: 1 = Laranja, 2 = Amarelo, 3 = Verde
-            const skillColors = {
-                1: '#f97316', // Laranja
-                2: '#eab308', // Amarelo
-                3: '#10b981'  // Verde
-            };
             let activeColor = skillColors[currentLevel];
 
             const container = document.getElementById(`segments-${skillKey}`);
@@ -623,6 +650,9 @@
                 seg.className = 'segment';
                 if (i <= activeSegments) {
                     seg.style.backgroundColor = activeColor;
+                    if (totalPoints >= 30) {
+                        seg.style.boxShadow = `0 0 5px ${activeColor}`; // Brilho especial no nível máximo
+                    }
                 }
                 container.appendChild(seg);
             }
@@ -634,15 +664,14 @@
         document.getElementById('profileNameDisplay').innerText = appData.name;
         document.getElementById('levelDisplay').innerText = `Nível ${appData.level}`;
 
-        let currentTitle = "Novato Disciplinado";
-        for (let t of titlesData) {
-            if (appData.level >= t.level) {
-                currentTitle = t.title;
-            }
-        }
+        let currentTitle = "Aprendiz dos hábitos";
+        if (appData.level === 2) currentTitle = "Pequeno disciplinado";
+        if (appData.level === 3) currentTitle = "Profissional da rotina";
+        if (appData.level >= 4) currentTitle = "Mestre absoluto da constância";
+        
         document.getElementById('profileTitleDisplay').innerText = currentTitle;
 
-        let xpRequired = appData.level * 100;
+        let xpRequired = getXPRequired(appData.level);
         document.getElementById('xpTextDisplay').innerText = `${appData.xp} / ${xpRequired} XP`;
         let percentage = Math.min(Math.max((appData.xp / xpRequired) * 100, 0), 100);
         document.getElementById('xpBarFill').style.width = `${percentage}%`;
@@ -653,16 +682,20 @@
 
     function addXP(amount, showAlert = true) {
         appData.xp += amount;
-        let xpRequired = appData.level * 100;
+        let xpRequired = getXPRequired(appData.level);
         
         if (appData.xp >= xpRequired) {
-            appData.xp -= xpRequired;
-            appData.level++;
-            if (showAlert) alert(`Parabéns! Você subiu para o Nível ${appData.level}! 🎉`);
+            if (appData.level < 4) {
+                appData.xp -= xpRequired;
+                appData.level++;
+                if (showAlert) alert(`Parabéns! Você subiu para o Nível ${appData.level}! 🎉`);
+            } else {
+                appData.xp = xpRequired; // Trava no limite máximo de nível global (Nível 4)
+            }
         } else if (appData.xp < 0) {
             if (appData.level > 1) {
                 appData.level--;
-                let prevRequired = appData.level * 100;
+                let prevRequired = getXPRequired(appData.level);
                 appData.xp = prevRequired + appData.xp;
                 if (showAlert) alert(`Você perdeu muito XP e caiu para o Nível ${appData.level}! Cuidado! ⚠️`);
             } else {
@@ -675,9 +708,14 @@
 
     function modifySkillPoints(skillKey, amount) {
         if (!appData.skills[skillKey] && appData.skills[skillKey] !== 0) return;
+        
         appData.skills[skillKey] += amount;
-        if (appData.skills[skillKey] < 0) appData.skills[skillKey] = 0;
-        if (appData.skills[skillKey] > 30) appData.skills[skillKey] = 30; // Limite máximo para 3 níveis (3 * 10)
+        
+        if (appData.skills[skillKey] < 0) {
+            appData.skills[skillKey] = 0;
+        } else if (appData.skills[skillKey] > 30) {
+            appData.skills[skillKey] = 30; // Trava a pontuação da habilidade no Nível 3 Max (30 pts)
+        }
     }
 
     function renderTodayTasks() {
@@ -698,18 +736,24 @@
         container.innerHTML = '';
         todaysTasks.forEach(task => {
             let xpValue = getTaskXP(task.type);
-            let badgeText = task.type === 'common' ? 'Comum' : `+${xpValue} XP`;
-            let skillBadge = task.skill && task.skill !== 'neutra' ? `<span class="task-badge skill">${task.skill.toUpperCase()}</span>` : '';
+            let badgeText = `+${xpValue} XP`;
+            let skillNameDisplay = task.skill && task.skill !== 'neutra' ? appData.skillNames[task.skill] : '';
+            
+            // Verifica se a habilidade está no max para trocar o texto da tag caso conclua
+            let isSkillMax = task.skill && task.skill !== 'neutra' && appData.skills[task.skill] >= 30;
+            let skillBadgeClass = isSkillMax ? "task-badge max" : "task-badge skill";
+            let skillBadgeText = isSkillMax ? `${skillNameDisplay.toUpperCase()} (MÁX)` : skillNameDisplay.toUpperCase();
+            let skillBadge = skillNameDisplay ? `<span class="${skillBadgeClass}">${skillBadgeText}</span>` : '';
 
             let failedMessage = '';
             if (task.failed) {
                 let detailsText = '';
                 if (xpValue > 0 && task.skill && task.skill !== 'neutra') {
-                    detailsText = `(-${xpValue} XP e -1 ponto em ${task.skill.toUpperCase()})`;
+                    detailsText = `(-${xpValue} XP e -1 ponto em ${skillNameDisplay})`;
                 } else if (xpValue > 0) {
                     detailsText = `(-${xpValue} XP aplicados)`;
                 } else if (task.skill && task.skill !== 'neutra') {
-                    detailsText = `(-1 ponto em ${task.skill.toUpperCase()})`;
+                    detailsText = `(-1 ponto em ${skillNameDisplay})`;
                 } else {
                     detailsText = `(Sem penalidades)`;
                 }
@@ -792,11 +836,10 @@
         container.innerHTML = '';
         dayTasks.forEach(task => {
             let xpValue = getTaskXP(task.type);
-            let descType = task.type === 'common' ? 'Comum' : `${xpValue} XP`;
-            let skillInfo = task.skill && task.skill !== 'neutra' ? `[${task.skill.toUpperCase()}]` : '';
+            let skillNameDisplay = task.skill && task.skill !== 'neutra' ? `[${appData.skillNames[task.skill]}]` : '';
             container.innerHTML += `
                 <div class="task-row" style="background: var(--bg-color); padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border);">
-                    <span style="font-size: 0.85rem;">${task.title} ${skillInfo} (${descType})</span>
+                    <span style="font-size: 0.85rem;">${task.title} ${skillNameDisplay} (${xpValue} XP)</span>
                     <button class="action-btn fail-btn" onclick="deleteTask(${selectedDay}, ${task.id})">Apagar</button>
                 </div>
             `;
@@ -848,36 +891,27 @@
     function loadProfileSettings() {
         document.getElementById('editNameInput').value = appData.name;
         document.getElementById('editEmojiInput').value = appData.emoji;
+        document.getElementById('editSkill0').value = appData.skillNames.estudos;
+        document.getElementById('editSkill1').value = appData.skillNames.treino;
+        document.getElementById('editSkill2').value = appData.skillNames.leitura;
     }
 
     function saveProfileSettings() {
         const name = document.getElementById('editNameInput').value.trim();
         const emoji = document.getElementById('editEmojiInput').value.trim();
+        const s0 = document.getElementById('editSkill0').value.trim();
+        const s1 = document.getElementById('editSkill1').value.trim();
+        const s2 = document.getElementById('editSkill2').value.trim();
 
         if (name) appData.name = name;
         if (emoji) appData.emoji = emoji;
+        if (s0) appData.skillNames.estudos = s0;
+        if (s1) appData.skillNames.treino = s1;
+        if (s2) appData.skillNames.leitura = s2;
 
         saveData();
         updateProfileUI();
-        alert('Perfil atualizado com sucesso!');
-    }
-
-    function resetProgress() {
-        if (confirm('Tem certeza que deseja resetar todo o XP, nível, habilidades e pontuações? Suas tarefas serão mantidas.')) {
-            appData.xp = 0;
-            appData.level = 1;
-            appData.skills = { estudos: 0, treino: 0, leitura: 0 };
-            appData.hadUnfinishedYesterday = false;
-            for (let day in appData.tasks) {
-                appData.tasks[day].forEach(t => {
-                    t.completed = false;
-                    t.failed = false;
-                });
-            }
-            saveData();
-            updateProfileUI();
-            alert('Progresso resetado!');
-        }
+        alert('Configurações atualizadas com sucesso!');
     }
 
     function renderTitles() {
@@ -885,11 +919,13 @@
         container.innerHTML = '';
 
         titlesData.forEach(item => {
-            const unlocked = appData.level >= item.level;
+            let unlocked = appData.level >= item.level;
+            let statusText = unlocked ? `Desbloqueado (Nível ${item.level})` : `Requer Nível ${item.level}`;
+
             container.innerHTML += `
                 <div class="title-item ${unlocked ? '' : 'locked'}">
                     <span>${item.title}</span>
-                    <span style="font-size: 0.8rem;">${unlocked ? 'Desbloqueado (Nível ' + item.level + ')' : 'Requer Nível ' + item.level}</span>
+                    <span style="font-size: 0.8rem;">${statusText}</span>
                 </div>
             `;
         });
